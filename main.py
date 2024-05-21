@@ -10,8 +10,12 @@ def main():
 
     args = parser.parse_args()
 
-    storage = Storage(args.data_path)
-    storage
+    params = {"min_capacity_perc": 20, "max_capacity_perc": 90}
+
+    storage = Storage(args.data_path, 5)
+    storage.set_parameters(**params)
+
+    storage.process_data()
 
 
 if __name__ == "__main__":

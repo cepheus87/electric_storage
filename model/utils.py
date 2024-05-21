@@ -1,7 +1,12 @@
 import pandas as pd
 
 
-def preprocess_data(data_path):
+def preprocess_data(data_path) -> pd.DataFrame:
+    """
+    Preprocess data
+    :param data_path: path to csv data file
+    :return: Dataframe with each type of energy for given hour (single row)
+    """
     def _change_time(date: str) -> str:
         day = date.split(" ")[0]
         time = date.split(" ")[1]
@@ -20,5 +25,6 @@ def preprocess_data(data_path):
 
     df["date"] = df["date"].apply(_change_time)
     df["date"] = pd.to_datetime(df["date"], format="%Y-%m-%d %H:%M:%S")
+    df = df.pivot(index='date', columns='type', values='value_kWh')
 
     return df
