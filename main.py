@@ -10,7 +10,7 @@ def main():
 
     args = parser.parse_args()
 
-    params = {"min_capacity_perc": 20, "max_capacity_perc": 90}
+    params = {"min_capacity_perc": 20, "max_capacity_perc": 90, "max_input_power": 2.5, "max_output_power": 2.5}
 
     storage = Storage(args.data_path, 5)
     storage.set_parameters(**params)

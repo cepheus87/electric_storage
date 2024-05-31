@@ -13,7 +13,8 @@ class Storage:
         self.capacity = capacity_kWh
         self._min_capacity_perc = None
         self._max_capacity_perc = None
-        self._charge_speed = None  # in kWh
+        self._max_input_power = None  # in kWh
+        self._max_output_power = None  # in kWh
 
         self._current_energy = 0
         self.used_energy = 0
@@ -25,7 +26,8 @@ class Storage:
         """
         self._min_capacity_perc = kwargs.get("min_capacity_perc")
         self._max_capacity_perc = kwargs.get("max_capacity_perc")
-        self._charge_speed = kwargs.get("charge_speed")
+        self._max_input_power = kwargs.get("max_input_power")
+        self._max_output_power = kwargs.get("max_output_power")
 
     @property
     def data_path(self) -> str:
@@ -50,12 +52,10 @@ class Storage:
         :return: energy still to consume after emptying storage
         """
 
-        underflow = used - self._current_energy
-        self._current_energy = max(self._current_energy - used, 0)
-        if underflow > 0:
-            return underflow
-        else:
-            return 0
+        storage_used = min(used, self._max_output_power, self._current_energy)
+        self._current_energy = self._current_energy - storage_used
+
+        return used - storage_used
 
     def _recharge(self, produced) -> float:
         """
@@ -64,14 +64,10 @@ class Storage:
         :return: left energy after recharging
         """
 
-        charged = min(produced, self._charge_speed)
-        surplus = self._current_energy + charged - self.real_capacity
-        self._current_energy = min(self._current_energy + charged, self.real_capacity)
+        charged = min(produced, self._max_input_power, self.real_capacity - self._current_energy)
+        self._current_energy = self._current_energy + charged
 
-        if surplus < 0:
-            return 0 + produced - charged
-        else:
-            return surplus + produced - charged
+        return produced - charged
 
     def _update(self, row: pd.Series):
         """
@@ -83,7 +79,6 @@ class Storage:
         # use battery
         # recharge_battery to speed limit
         # balance
-
 
         to_consume = self._use_capacity(row["used"])
         surplus_energy = self._recharge(row["produced"])
