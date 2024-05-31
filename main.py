@@ -16,6 +16,7 @@ def main():
     storage.set_parameters(**params)
 
     storage.process_data()
+    storage.show_results()
 
 
 if __name__ == "__main__":

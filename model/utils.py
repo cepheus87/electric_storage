@@ -25,6 +25,9 @@ def preprocess_data(data_path) -> pd.DataFrame:
 
     df["date"] = df["date"].apply(_change_time)
     df["date"] = pd.to_datetime(df["date"], format="%Y-%m-%d %H:%M:%S")
+    df["value_kWh"] = df["value_kWh"].apply(lambda v: v.replace(",", "."))
+    df["value_kWh"] = df["value_kWh"].astype(float)
     df = df.pivot(index='date', columns='type', values='value_kWh')
+
 
     return df

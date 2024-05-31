@@ -76,8 +76,8 @@ class Storage:
         """
 
         # flow:
-        # use battery
-        # recharge_battery to speed limit
+        # use battery to max output power
+        # recharge_battery to max input power
         # balance
 
         to_consume = self._use_capacity(row["used"])
@@ -97,3 +97,13 @@ class Storage:
         :return:
         """
         self.data.apply(self._update, axis=1)
+
+    def show_results(self):
+        """
+        Prints used and produced energy
+        """
+        print(f"Used energy with energy storage: {self.used_energy}")
+        print(f"Produced energy with energy storage: {self.produced_energy}")
+        print(f"Used energy without energy storage: {self.data['used'].sum()}")
+        print(f"Produced energy without energy storage: {self.data['produced'].sum()}")
+
